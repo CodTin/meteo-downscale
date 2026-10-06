@@ -70,6 +70,31 @@ The catalog distinguishes "catalog unknown" from "no products in query range," n
 
 ## Implementation Decisions
 
+### Technical Stack
+
+See Architecture Decision Records (ADRs) in `docs/adr/` for detailed rationale.
+
+**Foundation:**
+- **Unit Testing**: Vitest (ADR-0001) - 4x faster than Jest, native ESM/TypeScript, React 19 compatible
+- **E2E Testing**: Playwright (ADR-0002) - Free parallelization, multi-browser including Safari
+- **API Mocking**: MSW (ADR-0003) - Network-level interception for dev/test/Storybook
+- **Design System**: shadcn/ui + Radix UI + Heroicons (ADR-0004) - Copy-paste architecture, WCAG 2.2 AA accessibility
+- **State Management**: TanStack Query + Zustand + useState (ADR-0005) - Server state in Query, shared client state in Zustand, local state in useState
+- **Date Library**: date-fns (ADR-0006) - Tree-shakable, 5-15KB bundle for init time + lead time calculations
+- **Tables**: TanStack Table (ADR-0007) - Headless table library for cycle lists and production status grids
+
+**Visualization:**
+- **2D Maps**: MapLibre GL JS + deck.gl (ADR-0008) - Hardware-accelerated WebGL for meteorological field rendering
+- **3D Terrain**: Three.js + @react-three/fiber (ADR-0009) - DEM mesh generation and cross-section sampling
+- **Charts**: Recharts via shadcn/ui (ADR-0010) - Declarative React API for ensemble spread bands and time series
+
+**Catalog-Specific Application:**
+- Cycle list tables use TanStack Table with sorting/filtering
+- Cycle metadata (init time, valid time calculations) uses date-fns
+- Server state (cycle lists, cycle details, valid time queries) managed by TanStack Query with automatic caching
+- Shared filter state (date range, region, mode toggle) stored in Zustand for preservation across catalog sub-pages
+- All components styled with shadcn/ui for visual consistency with analysis pages
+
 ### Module Structure
 
 - **`/app/catalog/` route group** - Three sub-pages under unified catalog navigation

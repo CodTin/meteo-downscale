@@ -94,6 +94,27 @@ Implement a navigation framework with four core modules that handle routing, con
 
 ## Implementation Decisions
 
+### Technical Stack
+
+See Architecture Decision Records (ADRs) in `docs/adr/` for detailed rationale.
+
+**Foundation:**
+- **Unit Testing**: Vitest (ADR-0001) - 4x faster than Jest, native ESM/TypeScript, React 19 compatible
+- **E2E Testing**: Playwright (ADR-0002) - Free parallelization, multi-browser including Safari
+- **API Mocking**: MSW (ADR-0003) - Network-level interception for dev/test/Storybook
+- **Design System**: shadcn/ui + Radix UI + Heroicons (ADR-0004) - Copy-paste architecture, WCAG 2.2 AA accessibility
+- **State Management**: TanStack Query + Zustand + useState (ADR-0005) - Server state in Query, shared client state in Zustand, local state in useState
+- **Date Library**: date-fns (ADR-0006) - Tree-shakable, 5-15KB bundle for init time + lead time calculations
+- **Tables**: TanStack Table (ADR-0007) - Headless table library for data grids
+
+**Visualization:**
+- **2D Maps**: MapLibre GL JS + deck.gl (ADR-0008) - Hardware-accelerated WebGL for meteorological field rendering
+- **3D Terrain**: Three.js + @react-three/fiber (ADR-0009) - DEM mesh generation and cross-section sampling
+- **Charts**: Recharts via shadcn/ui (ADR-0010) - Declarative React API for ensemble spread bands and time series
+
+**Global Framework Navigation-Specific Application:**
+Navigation framework uses Zustand for global analysis context state (cycle, validTime, variable, region, batchPerLead map) shared across all 27 pages, date-fns for cycle/lead/validTime calculations and temporal constraint validation, TanStack Query for product catalog availability queries and batch validity re-verification on navigation.
+
 ### Module Architecture
 
 Four core modules implement the navigation framework:

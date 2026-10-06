@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/test-results
+/playwright-report
+/.playwright
 
 # next.js
 /.next/
@@ -49,6 +52,9 @@ next-env.d.ts
 skills-lock.json
 
 docs/refs
+
+# CodeGraph
+.codegraph/
 # >>> Comet managed project state >>>
 !/.comet/
 /.comet/*
