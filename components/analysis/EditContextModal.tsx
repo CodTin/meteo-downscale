@@ -58,18 +58,24 @@ export function EditContextModal({ open, onOpenChange }: EditContextModalProps) 
     setSelectedLeadTime(leadTime ? parseInt(leadTime, 10) : null);
     setSelectedVariableId(variableId || null);
 
-    // For region, we need to construct a Region object
-    // TODO: In production, fetch full region data from API
+    // For region, preserve existing region data if only updating the ID
     if (regionId) {
-      const mockRegion: Region = {
-        id: regionId,
-        name: regionId, // TODO: Get actual name from region data
-        north: 0,
-        south: 0,
-        east: 0,
-        west: 0,
-      };
-      setSelectedRegion(mockRegion);
+      // If current region exists and ID matches, keep it
+      if (selectedRegion && selectedRegion.id === regionId) {
+        setSelectedRegion(selectedRegion);
+      } else {
+        // Create new region object - coordinates should be set by parent component
+        // or fetched from API in production
+        const newRegion: Region = {
+          id: regionId,
+          name: regionId, // Will be updated when proper region data is loaded
+          north: selectedRegion?.north ?? 0,
+          south: selectedRegion?.south ?? 0,
+          east: selectedRegion?.east ?? 0,
+          west: selectedRegion?.west ?? 0,
+        };
+        setSelectedRegion(newRegion);
+      }
     } else {
       setSelectedRegion(null);
     }
@@ -104,7 +110,7 @@ export function EditContextModal({ open, onOpenChange }: EditContextModalProps) 
         <div className="space-y-4">
           {/* Cycle */}
           <div>
-            <label htmlFor="cycle" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="cycle" className="block text-sm font-medium text-neutral-500 mb-1">
               Cycle (UTC)
             </label>
             <input
@@ -119,7 +125,7 @@ export function EditContextModal({ open, onOpenChange }: EditContextModalProps) 
 
           {/* Valid Time */}
           <div>
-            <label htmlFor="validTime" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="validTime" className="block text-sm font-medium text-neutral-500 mb-1">
               Valid Time (UTC)
             </label>
             <input
@@ -134,7 +140,7 @@ export function EditContextModal({ open, onOpenChange }: EditContextModalProps) 
 
           {/* Lead Time */}
           <div>
-            <label htmlFor="leadTime" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="leadTime" className="block text-sm font-medium text-neutral-500 mb-1">
               Lead Time (hours)
             </label>
             <input
@@ -149,7 +155,7 @@ export function EditContextModal({ open, onOpenChange }: EditContextModalProps) 
 
           {/* Variable */}
           <div>
-            <label htmlFor="variable" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="variable" className="block text-sm font-medium text-neutral-500 mb-1">
               Variable
             </label>
             <select
@@ -170,7 +176,7 @@ export function EditContextModal({ open, onOpenChange }: EditContextModalProps) 
 
           {/* Region */}
           <div>
-            <label htmlFor="region" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="region" className="block text-sm font-medium text-neutral-500 mb-1">
               Region
             </label>
             <input
@@ -185,7 +191,7 @@ export function EditContextModal({ open, onOpenChange }: EditContextModalProps) 
 
           {/* Batch */}
           <div>
-            <label htmlFor="batch" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="batch" className="block text-sm font-medium text-neutral-500 mb-1">
               Batch
             </label>
             <input
