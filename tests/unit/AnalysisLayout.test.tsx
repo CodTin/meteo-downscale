@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import AnalysisLayout from "@/app/forecast/analysis/layout";
 import { usePathname } from "next/navigation";
 import { useAnalysisContext } from "@/stores/analysisContext";
+import { useAnalysisUrlSync } from "@/hooks/useAnalysisUrlSync";
 
 // Mock Next.js navigation
 vi.mock("next/navigation", () => ({
@@ -12,6 +13,11 @@ vi.mock("next/navigation", () => ({
 // Mock Zustand store
 vi.mock("@/stores/analysisContext", () => ({
   useAnalysisContext: vi.fn(),
+}));
+
+// Mock URL sync hook
+vi.mock("@/hooks/useAnalysisUrlSync", () => ({
+  useAnalysisUrlSync: vi.fn(),
 }));
 
 describe("AnalysisLayout", () => {
@@ -25,6 +31,10 @@ describe("AnalysisLayout", () => {
       selectedVariableId: "T2m",
       selectedRegion: { id: "sichuan", name: "Sichuan", north: 33, south: 27, east: 108, west: 102 },
       selectedBatchId: "batch-001",
+    });
+    (useAnalysisUrlSync as ReturnType<typeof vi.fn>).mockReturnValue({
+      urlErrors: [],
+      hasUrlParams: false,
     });
   });
 
@@ -126,6 +136,40 @@ describe("AnalysisLayout", () => {
 
       const outerContainer = container.querySelector(".h-screen");
       expect(outerContainer).toBeInTheDocument();
+    });
+  });
+
+  describe("URL Error Display", () => {
+    it("shows error banner when URL params are invalid", () => {
+      (useAnalysisUrlSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        urlErrors: ["Invalid cycle ID format: invalid-cycle", "Invalid variable: bad_var"],
+        hasUrlParams: true,
+      });
+
+      render(
+        <AnalysisLayout>
+          <div>Test Content</div>
+        </AnalysisLayout>
+      );
+
+      expect(screen.getByText("Invalid URL parameters:")).toBeInTheDocument();
+      expect(screen.getByText("Invalid cycle ID format: invalid-cycle")).toBeInTheDocument();
+      expect(screen.getByText("Invalid variable: bad_var")).toBeInTheDocument();
+    });
+
+    it("does not show error banner when URL params are valid", () => {
+      (useAnalysisUrlSync as ReturnType<typeof vi.fn>).mockReturnValue({
+        urlErrors: [],
+        hasUrlParams: true,
+      });
+
+      render(
+        <AnalysisLayout>
+          <div>Test Content</div>
+        </AnalysisLayout>
+      );
+
+      expect(screen.queryByText("Invalid URL parameters:")).not.toBeInTheDocument();
     });
   });
 });
