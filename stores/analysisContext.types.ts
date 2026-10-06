@@ -51,6 +51,16 @@ export type LeadTime = number;
 export type VariableId = "T2m" | "SP" | "U10" | "V10" | "wind_speed" | "TP";
 
 /**
+ * Data expression type
+ * Defines how to compute the field from ensemble members
+ */
+export type DataExpression =
+  | "ai_ensemble_mean"
+  | "ai_ensemble_median"
+  | "ec_deterministic"
+  | "specific_member";
+
+/**
  * Batch identifier (产品批次)
  * Unique identifier for a published product batch
  */
@@ -69,6 +79,8 @@ export interface AnalysisContextState {
   selectedLeadTime: LeadTime | null;
   /** Currently selected meteorological variable */
   selectedVariableId: VariableId | null;
+  /** Currently selected data expression */
+  selectedExpression: DataExpression | null;
   /** Currently selected geographic region */
   selectedRegion: Region | null;
   /** Currently selected product batch */
@@ -87,6 +99,8 @@ export interface AnalysisContextActions {
   setSelectedLeadTime: (leadTime: LeadTime | null) => void;
   /** Set the selected variable */
   setSelectedVariableId: (variableId: VariableId | null) => void;
+  /** Set the selected data expression */
+  setSelectedExpression: (expression: DataExpression | null) => void;
   /** Set the selected region */
   setSelectedRegion: (region: Region | null) => void;
   /** Set the selected batch */

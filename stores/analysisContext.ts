@@ -7,6 +7,7 @@ import type {
   ValidTime,
   LeadTime,
   VariableId,
+  DataExpression,
   Region,
   BatchId,
 } from "./analysisContext.types";
@@ -19,6 +20,7 @@ const initialState: AnalysisContextState = {
   selectedValidTime: null,
   selectedLeadTime: null,
   selectedVariableId: null,
+  selectedExpression: null,
   selectedRegion: null,
   selectedBatchId: null,
 };
@@ -61,6 +63,9 @@ export const useAnalysisContext = create<AnalysisContextStore>()(
       setSelectedVariableId: (variableId: VariableId | null) =>
         set({ selectedVariableId: variableId }),
 
+      setSelectedExpression: (expression: DataExpression | null) =>
+        set({ selectedExpression: expression }),
+
       setSelectedRegion: (region: Region | null) =>
         set({ selectedRegion: region }),
 
@@ -86,6 +91,7 @@ export type {
   ValidTime,
   LeadTime,
   VariableId,
+  DataExpression,
   Region,
   BatchId,
 } from "./analysisContext.types";

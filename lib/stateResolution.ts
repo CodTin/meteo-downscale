@@ -148,6 +148,7 @@ export async function resolveInitialState(
 ): Promise<StateResolutionResult> {
   const region = getDefaultRegion();
   const variableId = DEFAULT_VARIABLE;
+  const expression = DEFAULT_EXPRESSION;
 
   // If specific cycle requested, try to use it
   if (requestedCycle) {
@@ -158,6 +159,7 @@ export async function resolveInitialState(
         cycleId: null,
         validTime: null,
         variableId,
+        expression,
         region,
         mode: "business",
         cycleExpired: false,
@@ -177,6 +179,7 @@ export async function resolveInitialState(
         cycleId: null,
         validTime: null,
         variableId,
+        expression,
         region,
         mode: "business",
         cycleExpired: false,
@@ -194,6 +197,7 @@ export async function resolveInitialState(
       cycleId: requestedCycle,
       validTime,
       variableId,
+      expression,
       region,
       mode: "business",
       cycleExpired,
@@ -224,6 +228,7 @@ export async function resolveInitialState(
       cycleId: null,
       validTime: null,
       variableId,
+      expression,
       region,
       mode,
       cycleExpired: false,
@@ -243,6 +248,7 @@ export async function resolveInitialState(
       cycleId: null,
       validTime: null,
       variableId,
+      expression,
       region,
       mode,
       cycleExpired: false,
@@ -261,6 +267,7 @@ export async function resolveInitialState(
     cycleId: catalog.latestCycle,
     validTime,
     variableId,
+    expression,
     region,
     mode,
     cycleExpired,

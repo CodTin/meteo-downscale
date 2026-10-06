@@ -7,6 +7,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAnalysisContext } from "@/stores/analysisContext";
 import { resolveInitialState } from "@/lib/stateResolution";
 import type { StateResolutionResult } from "@/lib/stateResolution.types";
@@ -18,6 +19,7 @@ import type { StateResolutionResult } from "@/lib/stateResolution.types";
  * @returns State resolution result and loading state
  */
 export function useInitialStateResolution(requestedCycle?: string) {
+  const searchParams = useSearchParams();
   const [resolution, setResolution] = useState<StateResolutionResult | null>(
     null
   );
@@ -27,10 +29,12 @@ export function useInitialStateResolution(requestedCycle?: string) {
   const {
     selectedCycleId,
     selectedVariableId,
+    selectedExpression,
     selectedRegion,
     setSelectedCycleId,
     setSelectedValidTime,
     setSelectedVariableId,
+    setSelectedExpression,
     setSelectedRegion,
   } = useAnalysisContext();
 
@@ -44,7 +48,11 @@ export function useInitialStateResolution(requestedCycle?: string) {
     async function resolve() {
       try {
         setLoading(true);
-        const result = await resolveInitialState(requestedCycle);
+
+        // Parse cycle from URL params if not explicitly provided
+        const cycleFromUrl = searchParams?.get("cycle") || requestedCycle;
+
+        const result = await resolveInitialState(cycleFromUrl || undefined);
         setResolution(result);
 
         // Apply resolved state to store
@@ -55,6 +63,7 @@ export function useInitialStateResolution(requestedCycle?: string) {
           setSelectedValidTime(result.validTime);
         }
         setSelectedVariableId(result.variableId);
+        setSelectedExpression(result.expression);
         setSelectedRegion(result.region);
 
         if (result.status !== "success") {
@@ -72,12 +81,15 @@ export function useInitialStateResolution(requestedCycle?: string) {
     resolve();
   }, [
     requestedCycle,
+    searchParams,
     selectedCycleId,
     selectedVariableId,
+    selectedExpression,
     selectedRegion,
     setSelectedCycleId,
     setSelectedValidTime,
     setSelectedVariableId,
+    setSelectedExpression,
     setSelectedRegion,
   ]);
 

@@ -5,7 +5,7 @@
  * per GLOSSARY.md specifications
  */
 
-import type { Region, VariableId } from "@/stores/analysisContext.types";
+import type { Region, VariableId, DataExpression } from "@/stores/analysisContext.types";
 
 /**
  * Data mode types (数据模式)
@@ -37,6 +37,8 @@ export interface StateResolutionResult {
   validTime: string | null;
   /** Resolved variable */
   variableId: VariableId;
+  /** Resolved data expression */
+  expression: DataExpression;
   /** Resolved region */
   region: Region;
   /** Resolved data mode */
@@ -77,4 +79,4 @@ export const DEFAULT_VARIABLE: VariableId = "T2m";
  * Default data expression: AI ensemble mean
  * Per GLOSSARY.md specification
  */
-export const DEFAULT_EXPRESSION = "ai_ensemble_mean";
+export const DEFAULT_EXPRESSION: DataExpression = "ai_ensemble_mean";
