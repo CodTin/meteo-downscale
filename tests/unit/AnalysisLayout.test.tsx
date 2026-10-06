@@ -4,6 +4,8 @@ import AnalysisLayout from "@/app/forecast/analysis/layout";
 import { usePathname } from "next/navigation";
 import { useAnalysisContext } from "@/stores/analysisContext";
 import { useAnalysisUrlSync } from "@/hooks/useAnalysisUrlSync";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode } from "react";
 
 // Mock Next.js navigation
 vi.mock("next/navigation", () => ({
@@ -20,9 +22,35 @@ vi.mock("@/hooks/useAnalysisUrlSync", () => ({
   useAnalysisUrlSync: vi.fn(),
 }));
 
+// Mock batch monitoring hook
+vi.mock("@/hooks/useBatchMonitoring", () => ({
+  useBatchMonitoring: vi.fn(() => ({
+    isWithdrawn: false,
+    withdrawal: null,
+    newBatchAvailable: null,
+    dismissNewBatchNotification: vi.fn(),
+    isValidating: false,
+  })),
+}));
+
 describe("AnalysisLayout", () => {
+  let queryClient: QueryClient;
+
+  const renderWithQueryClient = (component: ReactNode) => {
+    return render(
+      <QueryClientProvider client={queryClient}>
+        {component}
+      </QueryClientProvider>
+    );
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
     (usePathname as ReturnType<typeof vi.fn>).mockReturnValue("/forecast/analysis/2d-map");
     (useAnalysisContext as ReturnType<typeof vi.fn>).mockReturnValue({
       selectedCycleId: "2024-10-06T12:00:00Z",
@@ -40,7 +68,7 @@ describe("AnalysisLayout", () => {
 
   describe("Layout Structure", () => {
     it("renders the context header above the sidebar", () => {
-      const { container } = render(
+      const { container } = renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -55,7 +83,7 @@ describe("AnalysisLayout", () => {
     });
 
     it("renders the navigation sidebar", () => {
-      render(
+      renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -67,7 +95,7 @@ describe("AnalysisLayout", () => {
     });
 
     it("renders children in the main content area", () => {
-      render(
+      renderWithQueryClient(
         <AnalysisLayout>
           <div data-testid="test-content">Test Content</div>
         </AnalysisLayout>
@@ -78,7 +106,7 @@ describe("AnalysisLayout", () => {
     });
 
     it("applies flex layout to separate sidebar and content", () => {
-      const { container } = render(
+      const { container } = renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -92,7 +120,7 @@ describe("AnalysisLayout", () => {
 
   describe("Context Header Integration", () => {
     it("displays context information from Zustand store", () => {
-      render(
+      renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -104,7 +132,7 @@ describe("AnalysisLayout", () => {
     });
 
     it("shows Edit and Refresh buttons in context header", () => {
-      render(
+      renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -117,7 +145,7 @@ describe("AnalysisLayout", () => {
 
   describe("Responsive Layout", () => {
     it("makes content area scrollable", () => {
-      const { container } = render(
+      const { container } = renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -128,7 +156,7 @@ describe("AnalysisLayout", () => {
     });
 
     it("uses full screen height", () => {
-      const { container } = render(
+      const { container } = renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -146,7 +174,7 @@ describe("AnalysisLayout", () => {
         hasUrlParams: true,
       });
 
-      render(
+      renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>
@@ -163,7 +191,7 @@ describe("AnalysisLayout", () => {
         hasUrlParams: true,
       });
 
-      render(
+      renderWithQueryClient(
         <AnalysisLayout>
           <div>Test Content</div>
         </AnalysisLayout>

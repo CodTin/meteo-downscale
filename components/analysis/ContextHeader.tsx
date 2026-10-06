@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PencilIcon, ArrowPathIcon } from "@heroicons/react/16/solid";
 import { useAnalysisContext } from "@/stores/analysisContext";
 import { EditContextModal } from "./EditContextModal";
+import { BatchWithdrawalModal } from "./BatchWithdrawalModal";
+import { Toast } from "@/components/ui/toast";
+import { useBatchMonitoring } from "@/hooks/useBatchMonitoring";
 import { formatCycleDisplay, formatValidTimeDisplay, formatRegionDisplay } from "@/lib/formatters";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -27,6 +30,8 @@ export function ContextHeader({ className }: ContextHeaderProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [batchWarning, setBatchWarning] = useState<string | null>(null);
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
+  const [showNewBatchToast, setShowNewBatchToast] = useState(false);
 
   const {
     selectedCycleId,
@@ -35,29 +40,61 @@ export function ContextHeader({ className }: ContextHeaderProps) {
     selectedVariableId,
     selectedRegion,
     selectedBatchId,
+    setSelectedBatchId,
   } = useAnalysisContext();
+
+  // Monitor batch status for withdrawals and updates
+  const {
+    isWithdrawn,
+    withdrawal,
+    newBatchAvailable,
+    dismissNewBatchNotification,
+  } = useBatchMonitoring(selectedBatchId, selectedCycleId, {
+    enablePolling: true,
+    pollInterval: 60000, // Poll every minute
+  });
+
+  // Show withdrawal modal when batch is withdrawn
+  useEffect(() => {
+    if (isWithdrawn && withdrawal) {
+      setShowWithdrawalModal(true);
+    }
+  }, [isWithdrawn, withdrawal]);
+
+  // Show toast notification when new batch is available
+  useEffect(() => {
+    if (newBatchAvailable) {
+      setShowNewBatchToast(true);
+    }
+  }, [newBatchAvailable]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     setBatchWarning(null);
 
     try {
-      // TODO: Call actual batch validation API
-      // const response = await fetch(`/api/batches/${selectedBatchId}/validate`);
-      // const data = await response.json();
-
-      // Mock implementation for now
+      // Trigger re-validation by the useBatchMonitoring hook
+      // The hook will automatically detect withdrawals and updates
       await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Simulate batch validation result
-      // if (data.status === 'withdrawn') {
-      //   setBatchWarning(`Batch withdrawn: ${data.reason}. Alternatives: ${data.alternatives.join(', ')}`);
-      // }
     } catch (error) {
       console.error("Failed to validate batch:", error);
       setBatchWarning("Failed to validate batch availability");
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  const handleSwitchBatch = (newBatchId: string) => {
+    setSelectedBatchId(newBatchId);
+    setShowWithdrawalModal(false);
+    setBatchWarning(null);
+  };
+
+  const handleUpdateToNewBatch = () => {
+    if (newBatchAvailable) {
+      setSelectedBatchId(newBatchAvailable.newBatchId);
+      setShowNewBatchToast(false);
+      dismissNewBatchNotification();
     }
   };
 
@@ -147,6 +184,32 @@ export function ContextHeader({ className }: ContextHeaderProps) {
         open={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}
       />
+
+      {/* Batch withdrawal modal */}
+      {withdrawal && (
+        <BatchWithdrawalModal
+          open={showWithdrawalModal}
+          onOpenChange={setShowWithdrawalModal}
+          batchId={selectedBatchId || ""}
+          withdrawal={withdrawal}
+          onSwitchBatch={handleSwitchBatch}
+        />
+      )}
+
+      {/* New batch available toast */}
+      {showNewBatchToast && newBatchAvailable && (
+        <Toast
+          message={`New batch available for this cycle: ${newBatchAvailable.newBatchId}`}
+          action={{
+            label: "Update",
+            onClick: handleUpdateToNewBatch,
+          }}
+          onClose={() => {
+            setShowNewBatchToast(false);
+            dismissNewBatchNotification();
+          }}
+        />
+      )}
     </>
   );
 }

@@ -67,3 +67,92 @@ export function useProductAvailabilityQuery(
       leadTime !== undefined,
   });
 }
+
+/**
+ * Query for batch validation
+ *
+ * Validates a batch ID and checks if it has been withdrawn
+ *
+ * @param batchId - Batch ID to validate
+ * @param cycleId - Cycle ID the batch belongs to
+ * @param options - Query options
+ * @returns Query result with batch validation
+ *
+ * @example
+ * ```tsx
+ * const { data: validation, isLoading } = useBatchValidationQuery(
+ *   'v2.3.1',
+ *   '2024-10-06T12:00:00Z'
+ * );
+ * ```
+ */
+export function useBatchValidationQuery(
+  batchId: string | null | undefined,
+  cycleId: string | null | undefined,
+  options?: { enabled?: boolean; refetchInterval?: number | false }
+) {
+  return useQuery({
+    queryKey: ["batch-validation", batchId, cycleId],
+    queryFn: async () => {
+      if (!batchId || !cycleId) {
+        throw new Error("Batch ID and cycle ID are required");
+      }
+      const { validateBatch } = await import("@/lib/api/client");
+      return validateBatch(batchId, cycleId);
+    },
+    staleTime: 30 * 1000, // 30 seconds
+    refetchOnWindowFocus: false,
+    refetchInterval: options?.refetchInterval ?? false, // Optional polling
+    enabled:
+      options?.enabled !== false &&
+      batchId !== null &&
+      batchId !== undefined &&
+      cycleId !== null &&
+      cycleId !== undefined,
+  });
+}
+
+/**
+ * Query for checking new batch updates
+ *
+ * Polls for new batch publications for a cycle
+ *
+ * @param cycleId - Cycle ID to check
+ * @param currentBatchId - Current batch ID
+ * @param options - Query options including polling interval
+ * @returns Query result with new batch notification if available
+ *
+ * @example
+ * ```tsx
+ * const { data: newBatch } = useBatchUpdateQuery(
+ *   '2024-10-06T12:00:00Z',
+ *   'v2.3.1',
+ *   { refetchInterval: 60000 } // Poll every minute
+ * );
+ * ```
+ */
+export function useBatchUpdateQuery(
+  cycleId: string | null | undefined,
+  currentBatchId: string | null | undefined,
+  options?: { enabled?: boolean; refetchInterval?: number | false }
+) {
+  return useQuery({
+    queryKey: ["batch-update", cycleId, currentBatchId],
+    queryFn: async () => {
+      if (!cycleId || !currentBatchId) {
+        return null;
+      }
+      const { checkForNewBatch } = await import("@/lib/api/client");
+      return checkForNewBatch(cycleId, currentBatchId);
+    },
+    staleTime: 30 * 1000, // 30 seconds
+    refetchOnWindowFocus: false,
+    refetchInterval: options?.refetchInterval ?? false, // Optional polling
+    enabled:
+      options?.enabled !== false &&
+      cycleId !== null &&
+      cycleId !== undefined &&
+      currentBatchId !== null &&
+      currentBatchId !== undefined,
+  });
+}

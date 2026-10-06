@@ -77,3 +77,64 @@ export async function fetchLatestCycle(
   const cycles = await fetchCycles({ status: "published", mode });
   return cycles.length > 0 ? cycles[0] : null;
 }
+
+/**
+ * Validate a batch ID and check its current status
+ *
+ * @param batchId - Batch ID to validate
+ * @param cycleId - Cycle ID the batch belongs to
+ * @returns Batch validation result
+ */
+export async function validateBatch(
+  batchId: string,
+  cycleId: string
+): Promise<import("./batchTypes").BatchValidationResult> {
+  // TODO: Replace with actual API call
+  // const response = await fetch(`/api/batches/${batchId}/validate?cycle=${cycleId}`);
+  // return response.json();
+
+  console.log(`Validating batch: ${batchId} for cycle ${cycleId}`);
+
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  // Mock implementation - assume batch is valid by default
+  return {
+    valid: true,
+    status: "published",
+    batch: {
+      id: batchId,
+      cycleId,
+      publishedAt: new Date().toISOString(),
+      status: "published",
+    },
+  };
+}
+
+/**
+ * Check for new batches available for a cycle
+ *
+ * @param cycleId - Cycle ID to check
+ * @param currentBatchId - Current batch ID
+ * @returns New batch notification if available, null otherwise
+ */
+export async function checkForNewBatch(
+  cycleId: string,
+  currentBatchId: string
+): Promise<import("./batchTypes").BatchUpdateNotification | null> {
+  // TODO: Replace with actual API call
+  // const response = await fetch(`/api/cycles/${cycleId}/batches/latest`);
+  // const latest = await response.json();
+  // if (latest.id !== currentBatchId) return latest;
+  // return null;
+
+  console.log(
+    `Checking for new batch: cycle=${cycleId}, current=${currentBatchId}`
+  );
+
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  // Mock implementation - no new batch by default
+  return null;
+}
