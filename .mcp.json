@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "codegraph": {
+      "command": "codegraph",
+      "args": [
+        "server",
+        "--mcp"
+      ]
+    },
+    "linear": {
+      "type": "sse",
+      "url": "https://mcp.linear.app/sse"
+    }
+  }
+}

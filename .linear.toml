@@ -1,0 +1,9 @@
+# Linear CLI repository defaults. Credentials remain in the system keyring.
+workspace = "yu-xiao"
+team_id = "YU"
+issue_sort = "priority"
+issue_create_assign_self = "never"
+
+# Always pass --project 6f1095a4-c2b5-40d6-9074-896a64018fd8 on create/query.
+# The CLI has no default-project config option.
+# See docs/agents/issue-tracker.md for the repository project and commands.
