@@ -5,7 +5,7 @@ import { PencilIcon, ArrowPathIcon } from "@heroicons/react/16/solid";
 import { useAnalysisContext } from "@/stores/analysisContext";
 import { EditContextModal } from "./EditContextModal";
 import { BatchWithdrawalModal } from "./BatchWithdrawalModal";
-import { Toast } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast";
 import { useBatchMonitoring } from "@/hooks/useBatchMonitoring";
 import { formatCycleDisplay, formatValidTimeDisplay, formatRegionDisplay } from "@/lib/formatters";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,6 @@ export function ContextHeader({ className }: ContextHeaderProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [batchWarning, setBatchWarning] = useState<string | null>(null);
   const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
-  const [showNewBatchToast, setShowNewBatchToast] = useState(false);
 
   const {
     selectedCycleId,
@@ -64,7 +63,11 @@ export function ContextHeader({ className }: ContextHeaderProps) {
   // Show toast notification when new batch is available
   useEffect(() => {
     if (newBatchAvailable) {
-      setShowNewBatchToast(true);
+      toast.add({
+        title: "New batch available",
+        description: `Batch ${newBatchAvailable.newBatchId} is now available for this cycle. Click Update to switch.`,
+        type: "info",
+      });
     }
   }, [newBatchAvailable]);
 
@@ -93,7 +96,6 @@ export function ContextHeader({ className }: ContextHeaderProps) {
   const handleUpdateToNewBatch = () => {
     if (newBatchAvailable) {
       setSelectedBatchId(newBatchAvailable.newBatchId);
-      setShowNewBatchToast(false);
       dismissNewBatchNotification();
     }
   };
@@ -193,21 +195,6 @@ export function ContextHeader({ className }: ContextHeaderProps) {
           batchId={selectedBatchId || ""}
           withdrawal={withdrawal}
           onSwitchBatch={handleSwitchBatch}
-        />
-      )}
-
-      {/* New batch available toast */}
-      {showNewBatchToast && newBatchAvailable && (
-        <Toast
-          message={`New batch available for this cycle: ${newBatchAvailable.newBatchId}`}
-          action={{
-            label: "Update",
-            onClick: handleUpdateToNewBatch,
-          }}
-          onClose={() => {
-            setShowNewBatchToast(false);
-            dismissNewBatchNotification();
-          }}
         />
       )}
     </>
