@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { UnavailableStateBase } from "./base";
 
 export interface ErrorStateProps {
   title?: string;
@@ -23,29 +23,25 @@ export function ErrorState({
   className,
 }: ErrorStateProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center justify-center min-h-[400px] p-8 text-center border border-warning-300 bg-warning-50 rounded-lg",
-        className
-      )}
+    <UnavailableStateBase
+      icon={<ExclamationTriangleIcon className="w-16 h-16 text-warning-500" />}
+      title={title}
+      message={message}
+      severity="warning"
+      action={
+        onRetry ? (
+          <Button
+            onClick={onRetry}
+            variant="outline"
+            className="border-warning-500 text-warning-700 hover:bg-warning-100"
+          >
+            {actionLabel}
+          </Button>
+        ) : null
+      }
+      className={className}
       role="alert"
-      aria-live="assertive"
-    >
-      <ExclamationTriangleIcon
-        className="w-16 h-16 text-warning-500 mb-4"
-        aria-hidden="true"
-      />
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-muted-foreground max-w-md mb-6">{message}</p>
-      {onRetry && (
-        <Button
-          onClick={onRetry}
-          variant="outline"
-          className="border-warning-500 text-warning-700 hover:bg-warning-100"
-        >
-          {actionLabel}
-        </Button>
-      )}
-    </div>
+      ariaLive="assertive"
+    />
   );
 }
