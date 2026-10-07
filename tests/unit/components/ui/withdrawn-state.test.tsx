@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { WithdrawnState } from "@/components/ui/withdrawn-state";
+import { WithdrawnState } from "@/components/unavailable-states/withdrawn-state";
 
 describe("WithdrawnState", () => {
   it("renders with default title", () => {

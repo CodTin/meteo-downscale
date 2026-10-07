@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { NotAvailableState } from "@/components/ui/not-available-state";
+import { NotAvailableState } from "@/components/unavailable-states/not-available-state";
 
 describe("NotAvailableState", () => {
   it("renders with default title", () => {
