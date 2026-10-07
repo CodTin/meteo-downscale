@@ -1,0 +1,22 @@
+#!/bin/sh
+
+echo "Running pre-commit checks..."
+
+# Run type checker (fastest check first)
+echo "→ Running type check..."
+bun run typecheck || {
+  echo "❌ Type check failed. Please fix type errors before committing."
+  exit 1
+}
+
+# Run tests
+echo "→ Running tests..."
+bun run test:run || {
+  echo "❌ Tests failed. Please fix failing tests before committing."
+  exit 1
+}
+
+# Note: Skipping lint check due to 37k+ linting issues in codebase
+# TODO: Enable linting once codebase is cleaned up
+
+echo "✅ All checks passed!"

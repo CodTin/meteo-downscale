@@ -1,5 +1,12 @@
 @AGENTS.md
 
+## Coding standards
+
+See `CODING_STANDARDS.md` for:
+- UI component installation (always use shadcn/ui CLI)
+- Testing with React Query (use `renderWithQueryClient`)
+- Hook mocking patterns
+
 ## Agent skills
 
 ### Issue tracker
